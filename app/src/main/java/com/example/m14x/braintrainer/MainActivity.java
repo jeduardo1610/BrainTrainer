@@ -45,30 +45,34 @@ public class MainActivity extends AppCompatActivity {
     int correctAnswerLocation;
     int score = 0;
     int numberOfQuestions = 0;
+    boolean gameIsActive = true;
 
     @OnClick(R.id.playAgainButton)
     public void playAgain(View view){
-        score = 0;
-        numberOfQuestions = 0;
-        timerTextView.setText("30s");
-        pointsTextView.setText("0/0");
-        resultTextView.setText("");
-        playAgainButton.setVisibility(View.INVISIBLE);
-        generateQuestions();
-        new CountDownTimer(30100, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                timerTextView.setText(String.valueOf(millisUntilFinished / 1000) + "s");
-            }
 
-            @Override
-            public void onFinish() {
-                timerTextView.setText("0s");
-                resultTextView.setText("Your score: " + Integer.toString(score) + "/" + Integer.toString(numberOfQuestions));
-                playAgainButton.setVisibility(View.VISIBLE);
-            }
-        }.start();
-    }
+            gameIsActive = true;
+            score = 0;
+            numberOfQuestions = 0;
+            timerTextView.setText("30s");
+            pointsTextView.setText("0/0");
+            resultTextView.setText("");
+            playAgainButton.setVisibility(View.INVISIBLE);
+            generateQuestions();
+            new CountDownTimer(30100, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    timerTextView.setText(String.valueOf(millisUntilFinished / 1000) + "s");
+                }
+
+                @Override
+                public void onFinish() {
+                    timerTextView.setText("0s");
+                    resultTextView.setText("Your score: " + Integer.toString(score) + "/" + Integer.toString(numberOfQuestions));
+                    playAgainButton.setVisibility(View.VISIBLE);
+                    gameIsActive = false;
+                }
+            }.start();
+        }
 
     @OnClick(R.id.startButton)
     public void start(View view){
@@ -115,15 +119,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void chooseAnswer(View view){
-        if(view.getTag().toString().equals(Integer.toString(correctAnswerLocation))){
-            score++;
-            resultTextView.setText("Correct!");
-        }else{
-            resultTextView.setText("Wrong!");
+        if(gameIsActive) {
+            if (view.getTag().toString().equals(Integer.toString(correctAnswerLocation))) {
+                score++;
+                resultTextView.setText("Correct!");
+            } else {
+                resultTextView.setText("Wrong!");
+            }
+            numberOfQuestions++;
+            pointsTextView.setText(Integer.toString(score) + "/" + Integer.toString(numberOfQuestions));
+            generateQuestions();
         }
-        numberOfQuestions++;
-        pointsTextView.setText(Integer.toString(score) + "/" + Integer.toString(numberOfQuestions));
-        generateQuestions();
     }
 
     @Override
